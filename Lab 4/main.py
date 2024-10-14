@@ -1,67 +1,46 @@
-#Import OS module
-import os
-
-#Import module to read CSV
 import csv
 
-#Set path for source file
-CSV_PATH = os.path.join ('Resources', 'budget_data.csv')
+def selection_sort(arr):
+    for i in range(len(arr)):
+        min_idx = i
+        for j in range(i + 1, len(arr)):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
 
-#Open and read CSV
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
-with open(CSV_PATH) as csvfile:
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and key < arr[j]:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr
 
-#Specify delimiter and CSV reader
-    csvreader = csv.reader(csvfile, delimiter=",")
+def read_csv(filename):
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        data = list(reader)
+    return data
 
-#Read header row, store it
-    csv_header = next(csvreader)
+def sort_csv(filename, sort_function, column_index):
+    data = read_csv(filename)
+    header = data[0]
+    data = data[1:]
 
-#Declare variables
-    months = 0
-    change = 0
+    data.sort(key=lambda row: row[column_index])
 
-#Declare and initiate lists and dictionaries
-    date_list = []
-    changes_list = []
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header)
+        writer.writerows(data)
 
-#Loop though data
-    for row in csvreader:
+if __name__ == "__main__":
+    filename = "/Users/q.gaffney/Lab-4/Lab 4/Resources/budget_data.csv"
+    column_index = 1
 
-#Create lists to store individually
-        date_list.append(row[0])
-        changes_list.append(row[1])
+    sort_csv(filename, selection_sort, column_index)
 
-        print(date_list, changes_list)
-
-        def selectionSort(date_list):
-            n = len(date_list)
-            for i in range(n-1):
-                minValueIndex = 1
-
-                for j in range(i+1, n):
-                    if date_list[j] < date_list[minValueIndex]:
-                        minValueIndex = j
-
-                if minValueIndex != i:
-                    temp = date_list[i]
-                    date_list[i] = date_list[minValueIndex]
-                    date_list[minValueIndex] = temp
-
-                return date_list
-            
-            for j in range(n):
-                if changes_list[j] < changes_list[minValueIndex]:
-                    minValueIndex = j
-
-                if minValueIndex != i:
-                    temp = changes_list[i]
-                    changes_list[i] = changes_list[minValueIndex]
-                    changes_list[minValueIndex] = temp
-
-                return changes_list
-        
-        SelSort = [date_list]
-        SelSort2 = [changes_list]
-
-        print(selectionSort(SelSort))
+    sort_csv(filename, insertion_sort, column_index)
